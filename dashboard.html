@@ -423,7 +423,7 @@ async function fetchData() {
 
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${s.binId}/latest`, {
-      headers: { 'X-Access-Key': '$2a$10$placeholder' }
+      headers: { 'X-Access-Key': '$2a$10$dmYapE8bDcZ3G5TfkVzu3u.70ooUr.DHhd52DCN95TZhgBKZv6Lhm' }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
