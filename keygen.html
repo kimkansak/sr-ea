@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SR EA · สร้าง License Key</title>
+<style>
+:root {
+  --bg: #080810;
+  --card: #12121e;
+  --card2: #1a1a2e;
+  --border: #2a2a40;
+  --accent: #00d4aa;
+  --accent2: #7b61ff;
+  --text: #e0e0f0;
+  --text2: #888899;
+  --success: #00ff88;
+  --danger: #ff4455;
+  --warn: #ffaa00;
+  --r: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', Tahoma, system-ui, sans-serif;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+/* ─── Header ─── */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.header .logo {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00d4aa, #7b61ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header p {
+  color: var(--text2);
+  margin-top: 8px;
+  font-size: 14px;
+}
+/* ─── Layout ─── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}
+/* ─── Card ─── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+  display: inline-block;
+}
+/* ─── Form ─── */
+.form-group {
+  margin-bottom: 16px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+input[type="number"], input[type="text"] {
+  width: 100%;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 16px;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color .2s;
+  font-family: 'Courier New', monospace;
+}
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,212,170,.1);
+}
+/* ─── Presets ─── */
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.preset-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all .2s;
+  font-weight: 500;
+}
+.preset-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* ─── Generate Button ─── */
+.btn-generate {
+  width: 100%;
+  background: linear-gradient(135deg, #00d4aa, #7b61ff);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+.btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-generate:active { transform: translateY(0); }
+/* ─── Key Result ─── */
+.key-box {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: none;
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.key-label {
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.key-value {
+  font-family: 'Courier New', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--success);
+  word-break: break-all;
+  margin-bottom: 12px;
+}
+.key-info {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.8;
+}
+.key-info span { color: var(--text); font-weight: 600; }
+.btn-copy {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 12px;
+}
+.btn-copy:hover { background: var(--accent); color: #000; }
+.btn-copy.copied { background: var(--success); border-color: var(--success); color: #000; }
+/* ─── History ─── */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.history-item {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  animation: fadeIn .3s ease;
+}
+.history-meta {
+  flex: 1;
+  min-width: 0;
+}
+.history-acc {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-exp {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+.history-key {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+.history-copy {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 12px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.history-copy:hover { border-color: var(--accent); color: var(--accent); }
+.empty-history {
+  text-align: center;
+  color: var(--text2);
+  font-size: 13px;
+  padding: 24px 0;
+}
+.clear-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+  float: right;
+  margin-top: -4px;
+  transition: all .15s;
+}
+.clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+/* ─── Warning ─── */
+.warning {
+  background: rgba(255,170,0,.08);
+  border: 1px solid rgba(255,170,0,.3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--warn);
+  margin-top: 16px;
+  line-height: 1.6;
+}
+.full-width { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ S/R Strategy EA</div>
+  <h1>License Key Generator</h1>
+  <p>สร้าง Key สำหรับสมาชิก — ผูกกับ Account Number และวันหมดอายุ</p>
+</div>
+
+<div class="grid">
+
+  <!-- Form -->
+  <div class="card">
+    <div class="card-title">ข้อมูลสมาชิก</div>
+
+    <div class="form-group">
+      <label>Account Number (MT5)</label>
+      <input type="number" id="accountNum" placeholder="เช่น 12345678" min="1">
+    </div>
+
+    <div class="form-group">
+      <label>วันหมดอายุ (YYYY.MM.DD)</label>
+      <input type="text" id="expiryDate" placeholder="เช่น 2026.12.31" maxlength="10">
+    </div>
+
+    <label style="margin-bottom:8px;">เลือกระยะเวลาอย่างรวดเร็ว</label>
+    <div class="presets">
+      <button class="preset-btn" onclick="setExpiry(30)">30 วัน</button>
+      <button class="preset-btn" onclick="setExpiry(60)">60 วัน</button>
+      <button class="preset-btn" onclick="setExpiry(90)">90 วัน</button>
+      <button class="preset-btn" onclick="setExpiry(180)">6 เดือน</button>
+      <button class="preset-btn" onclick="setExpiry(365)">1 ปี</button>
+    </div>
+
+    <button class="btn-generate" onclick="generate()">⚡ สร้าง License Key</button>
+
+    <div class="warning">
+      ⚠️ อย่าเปิดเผย Secret ที่ฝังใน EA ให้ผู้อื่น — Key จะหมดอายุอัตโนมัติตามวันที่กำหนด และใช้ได้เฉพาะ Account นั้นเท่านั้น
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="card">
+    <div class="card-title">Key ที่สร้างได้</div>
+
+    <div class="key-box" id="keyBox">
+      <div class="key-label">License Key</div>
+      <div class="key-value" id="keyDisplay">--------</div>
+      <div class="key-info" id="keyInfo"></div>
+      <button class="btn-copy" id="copyBtn" onclick="copyKey()">📋 คัดลอก Key</button>
+    </div>
+
+    <div style="color:var(--text2);font-size:13px;text-align:center;padding:40px 0;" id="emptyResult">
+      กรอกข้อมูลแล้วกด "สร้าง License Key"
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card full-width">
+    <div class="card-title">
+      ประวัติ Key ที่สร้าง
+      <button class="clear-btn" onclick="clearHistory()">ลบทั้งหมด</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+    <div class="empty-history" id="emptyHistory">ยังไม่มีประวัติ</div>
+  </div>
+
+</div>
+
+<script>
+// ─── Algorithm (ต้องตรงกับใน EA ทุกบิต) ───────────────────────────
+
+function toInt64(n) {
+  const MOD = 2n ** 64n;
+  n = ((n % MOD) + MOD) % MOD;
+  if (n >= 2n ** 63n) n -= MOD;
+  return n;
+}
+
+function generateLicenseKey(accountNumber, expiryDate) {
+  const secret = 741852963n;
+  let combined = toInt64(BigInt(accountNumber) ^ secret);
+
+  for (let i = 0; i < expiryDate.length; i++) {
+    combined = toInt64(combined * 31n + BigInt(expiryDate.charCodeAt(i)));
+  }
+
+  if (combined < 0n) combined = -combined;
+  const keyNum = combined % 100000000n;
+  return String(keyNum).padStart(8, '0');
+}
+
+// ─── Set Expiry Preset ─────────────────────────────────────────────
+
+function setExpiry(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const yyyy = d.getFullYear();
+  const mm   = String(d.getMonth() + 1).padStart(2, '0');
+  const dd   = String(d.getDate()).padStart(2, '0');
+  document.getElementById('expiryDate').value = `${yyyy}.${mm}.${dd}`;
+}
+
+// ─── Generate ─────────────────────────────────────────────────────
+
+function generate() {
+  const accInput    = document.getElementById('accountNum').value.trim();
+  const expiryInput = document.getElementById('expiryDate').value.trim();
+
+  if (!accInput) { alert('กรุณากรอก Account Number'); return; }
+  if (!expiryInput || !/^\d{4}\.\d{2}\.\d{2}$/.test(expiryInput)) {
+    alert('กรุณากรอกวันหมดอายุในรูปแบบ YYYY.MM.DD (เช่น 2026.12.31)');
+    return;
+  }
+
+  const [y,m,d] = expiryInput.split('.').map(Number);
+  const expDate  = new Date(y, m-1, d);
+  const today    = new Date(); today.setHours(0,0,0,0);
+
+  if (expDate <= today) {
+    alert('วันหมดอายุต้องเป็นวันในอนาคต');
+    return;
+  }
+
+  const key      = generateLicenseKey(accInput, expiryInput);
+  const daysLeft = Math.ceil((expDate - today) / 86400000);
+
+  // Show result
+  document.getElementById('keyDisplay').textContent = key;
+  document.getElementById('keyInfo').innerHTML =
+    `Account: <span>${accInput}</span><br>` +
+    `หมดอายุ: <span>${expiryInput}</span><br>` +
+    `เหลืออีก: <span>${daysLeft} วัน</span>`;
+
+  document.getElementById('keyBox').style.display = 'block';
+  document.getElementById('emptyResult').style.display = 'none';
+  document.getElementById('copyBtn').textContent = '📋 คัดลอก Key';
+  document.getElementById('copyBtn').classList.remove('copied');
+
+  // Save to history
+  saveHistory({ account: accInput, expiry: expiryInput, key, daysLeft, ts: Date.now() });
+  renderHistory();
+}
+
+// ─── Copy ─────────────────────────────────────────────────────────
+
+let currentKey = '';
+
+function copyKey() {
+  const key = document.getElementById('keyDisplay').textContent;
+  if (key === '--------') return;
+  navigator.clipboard.writeText(key).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ คัดลอกแล้ว!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 คัดลอก Key';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyHistoryKey(key, btn) {
+  navigator.clipboard.writeText(key).then(() => {
+    btn.textContent = '✅';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ─── History ──────────────────────────────────────────────────────
+
+function saveHistory(entry) {
+  let hist = JSON.parse(localStorage.getItem('sr_keygen_history') || '[]');
+  // avoid duplicate for same account+expiry
+  hist = hist.filter(h => !(h.account === entry.account && h.expiry === entry.expiry));
+  hist.unshift(entry);
+  if (hist.length > 30) hist = hist.slice(0, 30);
+  localStorage.setItem('sr_keygen_history', JSON.stringify(hist));
+}
+
+function clearHistory() {
+  if (!confirm('ลบประวัติทั้งหมด?')) return;
+  localStorage.removeItem('sr_keygen_history');
+  renderHistory();
+}
+
+function renderHistory() {
+  const hist = JSON.parse(localStorage.getItem('sr_keygen_history') || '[]');
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('emptyHistory');
+
+  if (hist.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = hist.map(h => `
+    <div class="history-item">
+      <div class="history-meta">
+        <div class="history-acc">Account: ${h.account}</div>
+        <div class="history-exp">หมดอายุ: ${h.expiry} · ${h.daysLeft} วัน</div>
+      </div>
+      <div class="history-key">${h.key}</div>
+      <button class="history-copy" onclick="copyHistoryKey('${h.key}', this)">Copy</button>
+    </div>
+  `).join('');
+}
+
+// ─── Init ─────────────────────────────────────────────────────────
+renderHistory();
+setExpiry(30); // default 30 days
+</script>
+</body>
+</html>

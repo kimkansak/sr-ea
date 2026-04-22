@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SR EA · Portfolio</title>
+<style>
+:root {
+  --bg: #080810;
+  --card: #12121e;
+  --card2: #1a1a2e;
+  --border: #2a2a40;
+  --accent: #00d4aa;
+  --text: #e0e0f0;
+  --text2: #7777aa;
+  --profit: #00ff88;
+  --loss: #ff4455;
+  --warn: #ffaa00;
+  --r: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+/* ─── Top Bar ─── */
+.topbar {
+  background: rgba(8,8,16,.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-logo { font-size: 15px; font-weight: 700; background: linear-gradient(135deg,#00d4aa,#7b61ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.conn-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text2);
+  animation: pulse 2s infinite;
+}
+.conn-dot.live { background: var(--profit); }
+.conn-dot.err  { background: var(--loss); animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.conn-label { font-size: 11px; color: var(--text2); }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+.topbar-time { font-size: 12px; color: var(--text2); font-family: 'Courier New', monospace; }
+.icon-btn {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 16px;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── Page ─── */
+.page { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+/* ─── Card ─── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+}
+.card-badge {
+  background: var(--card2); border-radius: 6px;
+  font-size: 11px; padding: 2px 8px; color: var(--text2);
+}
+
+/* ─── Status Card ─── */
+.status-big {
+  font-size: 18px; font-weight: 700;
+  padding: 14px 16px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid;
+  letter-spacing: .5px;
+}
+.status-scanning  { background: rgba(0,212,170,.08); border-color: rgba(0,212,170,.3); color: var(--accent); }
+.status-trading   { background: rgba(0,255,136,.08); border-color: rgba(0,255,136,.3); color: var(--profit); }
+.status-waiting   { background: rgba(255,170,0,.08);  border-color: rgba(255,170,0,.3);  color: var(--warn); }
+.status-stopped   { background: rgba(255,68,85,.08);  border-color: rgba(255,68,85,.3);  color: var(--loss); }
+.status-notime    { background: rgba(123,97,255,.08); border-color: rgba(123,97,255,.3); color: #7b61ff; }
+.status-sub {
+  display: flex; justify-content: space-between; margin-top: 12px; gap: 8px;
+}
+.status-sub-item {
+  flex: 1; background: var(--card2); border-radius: 8px;
+  padding: 10px; text-align: center;
+}
+.status-sub-val { font-size: 15px; font-weight: 700; color: var(--text); font-family: 'Courier New', monospace; }
+.status-sub-lbl { font-size: 10px; color: var(--text2); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ─── PnL Card ─── */
+.pnl-big {
+  font-size: 36px; font-weight: 800;
+  font-family: 'Courier New', monospace;
+  text-align: center; margin-bottom: 6px;
+}
+.pnl-pct {
+  text-align: center; font-size: 14px; margin-bottom: 14px; font-weight: 600;
+}
+.progress-track {
+  position: relative; height: 8px;
+  background: var(--card2); border-radius: 4px; overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-bar {
+  height: 100%; border-radius: 4px;
+  transition: width .5s ease;
+}
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text2);
+}
+.progress-labels span { font-family: 'Courier New', monospace; }
+.pnl-targets {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+.pnl-target {
+  flex: 1; background: var(--card2); border-radius: 8px;
+  padding: 10px; text-align: center;
+  border: 1px solid var(--border);
+}
+.pnl-target-val { font-size: 14px; font-weight: 700; font-family: 'Courier New', monospace; }
+.pnl-target-lbl { font-size: 10px; color: var(--text2); margin-top: 2px; letter-spacing: 1px; }
+
+/* ─── SR / Market ─── */
+.market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.market-item {
+  background: var(--card2); border-radius: 10px; padding: 12px;
+}
+.market-lbl { font-size: 11px; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.market-val { font-size: 16px; font-weight: 700; font-family: 'Courier New', monospace; }
+.rsi-bar-track { height: 4px; background: var(--border); border-radius: 2px; margin-top: 6px; }
+.rsi-bar { height: 100%; border-radius: 2px; transition: width .5s; }
+.candle-timer { font-size: 22px; font-weight: 800; font-family: 'Courier New', monospace; color: var(--accent); }
+
+/* ─── Account Card ─── */
+.acct-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.acct-row:last-child { border-bottom: none; padding-bottom: 0; }
+.acct-lbl { font-size: 13px; color: var(--text2); }
+.acct-val { font-size: 15px; font-weight: 700; font-family: 'Courier New', monospace; }
+
+/* ─── Position Card ─── */
+.pos-item {
+  background: var(--card2); border-radius: 10px; padding: 12px;
+  margin-bottom: 8px; border-left: 3px solid;
+}
+.pos-item.buy  { border-left-color: var(--profit); }
+.pos-item.sell { border-left-color: var(--loss); }
+.pos-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.pos-type {
+  font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  padding: 2px 10px; border-radius: 4px;
+}
+.pos-type.buy  { background: rgba(0,255,136,.15); color: var(--profit); }
+.pos-type.sell { background: rgba(255,68,85,.15);  color: var(--loss); }
+.pos-profit { font-size: 15px; font-weight: 700; font-family: 'Courier New', monospace; }
+.pos-details {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;
+  font-size: 12px; color: var(--text2);
+}
+.pos-details span { color: var(--text); font-family: 'Courier New', monospace; }
+.no-position { text-align: center; color: var(--text2); font-size: 13px; padding: 16px 0; }
+
+/* ─── License Card ─── */
+.license-bar-track { height: 6px; background: var(--border); border-radius: 3px; margin: 10px 0; }
+.license-bar { height: 100%; border-radius: 3px; transition: width .5s; background: var(--accent); }
+.license-row { display: flex; justify-content: space-between; font-size: 13px; margin-top: 8px; }
+.license-row span:first-child { color: var(--text2); }
+.license-row span:last-child { font-family: 'Courier New', monospace; font-weight: 600; }
+
+/* ─── Settings Panel ─── */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  backdrop-filter: blur(4px); z-index: 200;
+  display: none; align-items: flex-end;
+}
+.overlay.open { display: flex; }
+.settings-panel {
+  width: 100%; max-width: 480px; margin: 0 auto;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 40px;
+  animation: slideUp .3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
+.settings-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+.settings-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; }
+.settings-input {
+  width: 100%; background: var(--card2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px; padding: 11px 13px;
+  outline: none; font-family: 'Courier New', monospace; margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.settings-input:focus { border-color: var(--accent); }
+.settings-hint { font-size: 11px; color: var(--text2); margin-top: -10px; margin-bottom: 14px; line-height: 1.5; }
+.btn-save {
+  width: 100%; background: linear-gradient(135deg,#00d4aa,#7b61ff);
+  border: none; border-radius: 10px; color: #fff;
+  font-size: 15px; font-weight: 700; padding: 13px;
+  cursor: pointer; margin-top: 4px;
+}
+.btn-demo {
+  width: 100%; background: transparent; border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text2); font-size: 14px; font-weight: 600;
+  padding: 12px; cursor: pointer; margin-top: 8px; transition: all .2s;
+}
+.btn-demo:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── Refresh Ring ─── */
+.refresh-ring {
+  width: 20px; height: 20px; position: relative;
+}
+.refresh-ring svg { width: 20px; height: 20px; transform: rotate(-90deg); }
+.refresh-ring circle {
+  fill: none; stroke: var(--accent); stroke-width: 2.5;
+  stroke-dasharray: 56.5; stroke-linecap: round;
+  transition: stroke-dashoffset .5s;
+}
+.refresh-ring .track { stroke: var(--border); }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+  background: var(--card2); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 10px 20px; font-size: 13px;
+  z-index: 300; opacity: 0; transition: opacity .2s; white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ─── Loading ─── */
+.loading { text-align: center; color: var(--text2); padding: 40px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">SR EA</div>
+    <div style="display:flex;align-items:center;gap:5px;">
+      <div class="conn-dot" id="connDot"></div>
+      <span class="conn-label" id="connLabel">กำลังเชื่อมต่อ...</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-time" id="clockDisplay">--:--:--</div>
+    <div class="refresh-ring" title="Refresh countdown">
+      <svg viewBox="0 0 20 20">
+        <circle class="track" cx="10" cy="10" r="9"/>
+        <circle id="refreshRing" cx="10" cy="10" r="9" style="stroke-dashoffset:0"/>
+      </svg>
+    </div>
+    <div class="icon-btn" onclick="openSettings()" title="ตั้งค่า">⚙️</div>
+  </div>
+</div>
+
+<!-- Page Content -->
+<div class="page" id="mainPage">
+  <div class="loading">⏳ กำลังโหลดข้อมูล...</div>
+</div>
+
+<!-- Settings Overlay -->
+<div class="overlay" id="settingsOverlay" onclick="closeSettings(event)">
+  <div class="settings-panel" onclick="event.stopPropagation()">
+    <div class="settings-title">⚙️ ตั้งค่าการเชื่อมต่อ</div>
+
+    <div class="settings-label">Bin ID (จาก jsonbin.io)</div>
+    <input class="settings-input" id="settingBinId" placeholder="เช่น 6634a1f2acd3cb34a8497abc" style="font-size:13px">
+    <div class="settings-hint">
+      ได้จาก jsonbin.io → สร้าง Bin → copy ID<br>
+      (ผู้ให้บริการจะส่ง Bin ID นี้ให้คุณพร้อม License Key)
+    </div>
+
+    <div class="settings-label">Refresh ทุก (วินาที)</div>
+    <input class="settings-input" id="settingInterval" type="number" value="10" min="5" max="60">
+
+    <button class="btn-save" onclick="saveSettings()">💾 บันทึกและเชื่อมต่อ</button>
+    <button class="btn-demo" onclick="loadDemoData()">🎮 ดูโหมด Demo</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────
+let data         = null;
+let refreshTimer = null;
+let countdown    = 10;
+let countdownMax = 10;
+let isDemo       = false;
+
+// ─── Settings ─────────────────────────────────────────────────────
+function getSettings() {
+  return {
+    binId:    localStorage.getItem('sr_binId')    || '',
+    interval: parseInt(localStorage.getItem('sr_interval') || '10'),
+  };
+}
+
+function saveSettings() {
+  const binId    = document.getElementById('settingBinId').value.trim();
+  const interval = parseInt(document.getElementById('settingInterval').value) || 10;
+
+  if (!binId) { showToast('กรุณากรอก Bin ID'); return; }
+
+  localStorage.setItem('sr_binId',    binId);
+  localStorage.setItem('sr_interval', String(Math.max(5, Math.min(60, interval))));
+
+  isDemo       = false;
+  countdownMax = interval;
+  countdown    = interval;
+  closeSettings();
+  fetchData();
+  startRefreshTimer();
+  showToast('✅ บันทึกแล้ว');
+}
+
+function openSettings() {
+  const s = getSettings();
+  document.getElementById('settingBinId').value    = s.binId;
+  document.getElementById('settingInterval').value = s.interval;
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+
+function closeSettings(e) {
+  if (!e || e.target === document.getElementById('settingsOverlay'))
+    document.getElementById('settingsOverlay').classList.remove('open');
+}
+
+// ─── Demo Data ────────────────────────────────────────────────────
+function getDemoData() {
+  const now = new Date();
+  const rsi = 35 + Math.random() * 30;
+  const profit = (Math.random() - 0.3) * 200;
+  return {
+    account: 12345678,
+    symbol: 'EURUSD',
+    timestamp: now.toISOString().replace('T', ' ').slice(0, 19),
+    balance: 10000.00,
+    equity: 10000 + profit,
+    dailyStartBalance: 9980.00,
+    dailyPnL: profit,
+    dailyProfitTarget: 300.00,
+    dailyLossLimit: 200.00,
+    isDailyLimitHit: false,
+    support: 1.08450,
+    resistance: 1.09250,
+    rsi: rsi,
+    rsiPeriod: 14,
+    eaState: profit > 50 ? '>> กำลังเทรดอยู่' : '>>> สแกนหาสัญญาณ',
+    openTrades: profit > 50 ? 1 : 0,
+    maxTrades: 1,
+    candleCountdown: '04:23',
+    bkkTime: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} น.`,
+    licenseExpiry: '2026.12.31',
+    daysLeft: 252,
+    riskPercent: 1.0,
+    trailingEnabled: true,
+    positions: profit > 50 ? [{
+      ticket: 987654,
+      type: 'BUY',
+      lots: 0.05,
+      openPrice: 1.08550,
+      currentPrice: 1.08750,
+      sl: 1.08350,
+      tp: 1.09150,
+      profit: profit,
+      comment: 'SR_Strat_Rev Buy'
+    }] : []
+  };
+}
+
+function loadDemoData() {
+  isDemo = true;
+  data   = getDemoData();
+  closeSettings();
+  render();
+  setConnStatus('live', '🎮 Demo Mode');
+  startRefreshTimer();
+}
+
+// ─── Fetch ────────────────────────────────────────────────────────
+async function fetchData() {
+  const s = getSettings();
+  if (!s.binId) { openSettings(); return; }
+
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${s.binId}/latest`, {
+      headers: { 'X-Access-Key': '$2a$10$placeholder' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    // jsonbin.io wraps data inside "record"
+    data = json.record || json;
+    setConnStatus('live', 'เชื่อมต่อแล้ว');
+    render();
+  } catch(e) {
+    setConnStatus('err', 'เชื่อมต่อไม่ได้');
+    if (!data) showError(e.message);
+  }
+}
+
+// ─── Refresh Timer ────────────────────────────────────────────────
+function startRefreshTimer() {
+  clearInterval(refreshTimer);
+  countdownMax = isDemo ? 5 : getSettings().interval;
+  countdown    = countdownMax;
+
+  refreshTimer = setInterval(() => {
+    countdown--;
+    updateRefreshRing();
+
+    if (countdown <= 0) {
+      countdown = countdownMax;
+      if (isDemo) { data = getDemoData(); render(); }
+      else fetchData();
+    }
+  }, 1000);
+}
+
+function updateRefreshRing() {
+  const circle = document.getElementById('refreshRing');
+  const pct    = countdown / countdownMax;
+  const total  = 56.5;
+  circle.style.strokeDashoffset = total * (1 - pct);
+}
+
+// ─── Clock ────────────────────────────────────────────────────────
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('clockDisplay').textContent =
+    `${String(now.getHours()).padStart(2,'0')}:` +
+    `${String(now.getMinutes()).padStart(2,'0')}:` +
+    `${String(now.getSeconds()).padStart(2,'0')}`;
+}, 1000);
+
+// ─── Conn Status ──────────────────────────────────────────────────
+function setConnStatus(type, label) {
+  const dot = document.getElementById('connDot');
+  const lbl = document.getElementById('connLabel');
+  dot.className = 'conn-dot ' + type;
+  lbl.textContent = label;
+}
+
+// ─── Render ───────────────────────────────────────────────────────
+function render() {
+  if (!data) return;
+  const d = data;
+
+  const pnl       = d.dailyPnL || 0;
+  const pnlSign   = pnl >= 0 ? '+' : '';
+  const pnlColor  = pnl >= 0 ? 'var(--profit)' : 'var(--loss)';
+  const pnlPct    = d.dailyStartBalance > 0 ? (pnl / d.dailyStartBalance * 100) : 0;
+
+  // Progress bar: 0 = at loss limit, 100 = at profit target
+  const range       = (d.dailyProfitTarget || 0) + (d.dailyLossLimit || 0);
+  const barVal      = range > 0 ? ((pnl + (d.dailyLossLimit || 0)) / range * 100) : 50;
+  const barClamped  = Math.max(0, Math.min(100, barVal));
+  const barColor    = pnl >= 0 ? 'linear-gradient(90deg,#00cc66,#00ff88)' : 'linear-gradient(90deg,#ff2244,#ff6666)';
+
+  // Status class
+  const stateStr = (d.eaState || '').toLowerCase();
+  let statusClass = 'status-scanning';
+  if (stateStr.includes('เทรด'))         statusClass = 'status-trading';
+  else if (stateStr.includes('รอ'))      statusClass = 'status-waiting';
+  else if (stateStr.includes('หยุด') || stateStr.includes('ชน')) statusClass = 'status-stopped';
+  else if (stateStr.includes('ตี') || stateStr.includes('ปิดชั่ว')) statusClass = 'status-notime';
+
+  // RSI color
+  const rsi = d.rsi || 50;
+  let rsiColor = 'var(--accent)';
+  if (rsi < 30) rsiColor = 'var(--profit)';
+  else if (rsi > 70) rsiColor = 'var(--loss)';
+
+  // License bar
+  const licMax = 365;
+  const licPct = Math.min(100, (d.daysLeft / licMax) * 100);
+  let licColor = 'var(--profit)';
+  if (d.daysLeft < 30)  licColor = 'var(--loss)';
+  else if (d.daysLeft < 90) licColor = 'var(--warn)';
+
+  // Positions
+  const posHTML = (d.positions && d.positions.length > 0)
+    ? d.positions.map(p => {
+        const isB = p.type === 'BUY';
+        const pColor = p.profit >= 0 ? 'var(--profit)' : 'var(--loss)';
+        const pSign  = p.profit >= 0 ? '+' : '';
+        return `
+        <div class="pos-item ${isB ? 'buy' : 'sell'}">
+          <div class="pos-top">
+            <span class="pos-type ${isB ? 'buy' : 'sell'}">${p.type}</span>
+            <span class="pos-profit" style="color:${pColor}">${pSign}$${p.profit.toFixed(2)}</span>
+          </div>
+          <div class="pos-details">
+            <div>Lots <span>${p.lots}</span></div>
+            <div>Entry <span>${p.openPrice}</span></div>
+            <div>SL <span style="color:var(--loss)">${p.sl}</span></div>
+            <div>TP <span style="color:var(--profit)">${p.tp}</span></div>
+            <div style="grid-column:1/-1;color:var(--text2);margin-top:4px;font-size:11px">${p.comment || ''}</div>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="no-position">📭 ไม่มีออร์เดอร์ที่เปิดอยู่</div>`;
+
+  document.getElementById('mainPage').innerHTML = `
+
+    <!-- Status -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📡 สถานะ EA</div>
+        <div class="card-badge">${d.symbol || '-'} · #${d.account || '-'}</div>
+      </div>
+      <div class="status-big ${statusClass}">${d.eaState || 'ไม่ทราบสถานะ'}</div>
+      <div class="status-sub">
+        <div class="status-sub-item">
+          <div class="status-sub-val">${d.openTrades || 0}/${d.maxTrades || 1}</div>
+          <div class="status-sub-lbl">ออร์เดอร์</div>
+        </div>
+        <div class="status-sub-item">
+          <div class="status-sub-val" style="color:var(--accent)">${d.candleCountdown || '--:--'}</div>
+          <div class="status-sub-lbl">ปิดแท่ง</div>
+        </div>
+        <div class="status-sub-item">
+          <div class="status-sub-val">${d.bkkTime || '--:-- น.'}</div>
+          <div class="status-sub-lbl">เวลา BKK</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P&L -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💰 กำไร/ขาดทุนวันนี้</div>
+        <div class="card-badge">Risk ${d.riskPercent || 1}%/เทรด</div>
+      </div>
+      <div class="pnl-big" style="color:${pnlColor}">${pnlSign}$${Math.abs(pnl).toFixed(2)}</div>
+      <div class="pnl-pct" style="color:${pnlColor}">${pnlSign}${pnlPct.toFixed(2)}%</div>
+      <div class="progress-track">
+        <div class="progress-bar" style="width:${barClamped}%;background:${barColor}"></div>
+      </div>
+      <div class="progress-labels">
+        <span style="color:var(--loss)">-$${(d.dailyLossLimit || 0).toFixed(2)}</span>
+        <span>$0</span>
+        <span style="color:var(--profit)">+$${(d.dailyProfitTarget || 0).toFixed(2)}</span>
+      </div>
+      <div class="pnl-targets">
+        <div class="pnl-target">
+          <div class="pnl-target-val" style="color:var(--profit)">+$${(d.dailyProfitTarget || 0).toFixed(2)}</div>
+          <div class="pnl-target-lbl">เป้ากำไร</div>
+        </div>
+        <div class="pnl-target">
+          <div class="pnl-target-val" style="color:var(--loss)">-$${(d.dailyLossLimit || 0).toFixed(2)}</div>
+          <div class="pnl-target-lbl">จำกัดขาดทุน</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📊 ตลาด</div>
+      </div>
+      <div class="market-grid">
+        <div class="market-item">
+          <div class="market-lbl">แนวรับ (S)</div>
+          <div class="market-val" style="color:var(--profit)">${d.support || '-.-----'}</div>
+        </div>
+        <div class="market-item">
+          <div class="market-lbl">แนวต้าน (R)</div>
+          <div class="market-val" style="color:var(--loss)">${d.resistance || '-.-----'}</div>
+        </div>
+        <div class="market-item">
+          <div class="market-lbl">RSI (${d.rsiPeriod || 14})</div>
+          <div class="market-val" style="color:${rsiColor}">${rsi.toFixed(1)}</div>
+          <div class="rsi-bar-track">
+            <div class="rsi-bar" style="width:${rsi}%;background:${rsiColor}"></div>
+          </div>
+        </div>
+        <div class="market-item">
+          <div class="market-lbl">ปิดแท่งใน</div>
+          <div class="candle-timer">${d.candleCountdown || '--:--'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🏦 บัญชี</div>
+      </div>
+      <div class="acct-row">
+        <div class="acct-lbl">Balance</div>
+        <div class="acct-val">$${(d.balance || 0).toFixed(2)}</div>
+      </div>
+      <div class="acct-row">
+        <div class="acct-lbl">Equity</div>
+        <div class="acct-val" style="color:${(d.equity || 0) >= (d.balance || 0) ? 'var(--profit)' : 'var(--loss)'}">
+          $${(d.equity || 0).toFixed(2)}
+        </div>
+      </div>
+      <div class="acct-row">
+        <div class="acct-lbl">อัปเดตล่าสุด</div>
+        <div class="acct-val" style="font-size:12px;color:var(--text2)">${d.timestamp || '-'}</div>
+      </div>
+    </div>
+
+    <!-- Positions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📂 ออร์เดอร์</div>
+        <div class="card-badge">${d.openTrades || 0} รายการ</div>
+      </div>
+      ${posHTML}
+    </div>
+
+    <!-- License -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔑 License</div>
+      </div>
+      <div class="license-row">
+        <span>Account</span>
+        <span>#${d.account || '-'}</span>
+      </div>
+      <div class="license-row">
+        <span>หมดอายุ</span>
+        <span>${d.licenseExpiry || '-'}</span>
+      </div>
+      <div class="license-bar-track">
+        <div class="license-bar" style="width:${licPct}%;background:${licColor}"></div>
+      </div>
+      <div class="license-row">
+        <span>เหลืออีก</span>
+        <span style="color:${licColor}">${d.daysLeft || 0} วัน</span>
+      </div>
+    </div>
+
+  `;
+}
+
+function showError(msg) {
+  document.getElementById('mainPage').innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:40px;margin-bottom:16px;">❌</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;">เชื่อมต่อไม่ได้</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:24px;">${msg}</div>
+      <button onclick="openSettings()" style="background:var(--accent);border:none;border-radius:8px;color:#000;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer;">ตั้งค่าการเชื่อมต่อ</button>
+    </div>
+  `;
+}
+
+// ─── Toast ────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────
+(function init() {
+  const s = getSettings();
+  if (s.binId) {
+    fetchData();
+    countdownMax = s.interval;
+    countdown    = s.interval;
+    startRefreshTimer();
+  } else {
+    loadDemoData();
+    setTimeout(openSettings, 800);
+  }
+})();
+</script>
+</body>
+</html>
