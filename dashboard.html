@@ -496,12 +496,19 @@ function render() {
   const barColor    = pnl >= 0 ? 'linear-gradient(90deg,#00cc66,#00ff88)' : 'linear-gradient(90deg,#ff2244,#ff6666)';
 
   // Status class
-  const stateStr = (d.eaState || '').toLowerCase();
+  const rawState = (d.eaState || 'SCANNING');
   let statusClass = 'status-scanning';
-  if (stateStr.includes('เทรด'))         statusClass = 'status-trading';
-  else if (stateStr.includes('รอ'))      statusClass = 'status-waiting';
-  else if (stateStr.includes('หยุด') || stateStr.includes('ชน')) statusClass = 'status-stopped';
-  else if (stateStr.includes('ตี') || stateStr.includes('ปิดชั่ว')) statusClass = 'status-notime';
+  let stateLabel  = '🔍 สแกนหาสัญญาณ';
+  if (rawState === 'TRADING')            { statusClass = 'status-trading'; stateLabel = '▶ กำลังเทรดอยู่'; }
+  else if (rawState === 'NO_TRADE_TIME') { statusClass = 'status-notime';  stateLabel = '💤 ปิดชั่วคราว (ตี 2-4 BKK)'; }
+  else if (rawState === 'DAILY_PROFIT_HIT') { statusClass = 'status-stopped'; stateLabel = '★ ชนเป้ากำไรรายวัน — หยุดแล้ว'; }
+  else if (rawState === 'DAILY_LOSS_HIT')   { statusClass = 'status-stopped'; stateLabel = '✗ ชนขาดทุนรายวัน — หยุดแล้ว'; }
+  else if (rawState.startsWith('WAITING_RETEST')) {
+    const parts = rawState.split('_');
+    const dir = parts[2]; const cur = parts[3]; const max = parts[4];
+    statusClass = 'status-waiting';
+    stateLabel  = `⏳ รอ Retest ${dir} [${cur}/${max}]`;
+  }
 
   // RSI color
   const rsi = d.rsi || 50;
@@ -547,7 +554,7 @@ function render() {
         <div class="card-title">📡 สถานะ EA</div>
         <div class="card-badge">${d.symbol || '-'} · #${d.account || '-'}</div>
       </div>
-      <div class="status-big ${statusClass}">${d.eaState || 'ไม่ทราบสถานะ'}</div>
+      <div class="status-big ${statusClass}">${stateLabel}</div>
       <div class="status-sub">
         <div class="status-sub-item">
           <div class="status-sub-val">${d.openTrades || 0}/${d.maxTrades || 1}</div>
