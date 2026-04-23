@@ -164,6 +164,29 @@ body {
 .rsi-bar { height: 100%; border-radius: 2px; transition: width .5s; }
 .candle-timer { font-size: 22px; font-weight: 800; font-family: 'Courier New', monospace; color: var(--accent); }
 
+/* ─── Level 1: ATR & MTF ─── */
+.atr-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(123,97,255,.15); border: 1px solid rgba(123,97,255,.3);
+  border-radius: 6px; padding: 2px 8px; font-size: 11px; color: #a99bff;
+  font-family: 'Courier New', monospace; font-weight: 600;
+}
+.mtf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+.mtf-item {
+  background: var(--card2); border-radius: 8px; padding: 10px 8px; text-align: center;
+}
+.mtf-lbl { font-size: 10px; color: var(--text2); letter-spacing: 1px; margin-bottom: 4px; }
+.mtf-val { font-size: 13px; font-weight: 700; font-family: 'Courier New', monospace; }
+.mtf-sep { grid-column: 1 / -1; border-top: 1px solid var(--border); margin: 4px 0; }
+.bias-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700;
+  letter-spacing: .5px;
+}
+.bias-bull { background: rgba(0,255,136,.12); border: 1px solid rgba(0,255,136,.3); color: var(--profit); }
+.bias-bear { background: rgba(255,68,85,.12);  border: 1px solid rgba(255,68,85,.3);  color: var(--loss); }
+.bias-neu  { background: rgba(120,120,180,.12);border: 1px solid rgba(120,120,180,.3);color: var(--text2); }
+
 /* ─── Account Card ─── */
 .acct-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -382,9 +405,16 @@ function getDemoData() {
     isDailyLimitHit: false,
     support: 1.08450,
     resistance: 1.09250,
+    h4Support: 1.08200,
+    h4Resistance: 1.09500,
+    d1Support: 1.07800,
+    d1Resistance: 1.10100,
+    mtfBias: rsi < 40 ? 'BULLISH' : rsi > 65 ? 'BEARISH' : 'NEUTRAL',
+    atrPips: 12.4,
+    atrSLPips: 18.6,
     rsi: rsi,
     rsiPeriod: 14,
-    eaState: profit > 50 ? '>> กำลังเทรดอยู่' : '>>> สแกนหาสัญญาณ',
+    eaState: profit > 50 ? 'TRADING' : 'SCANNING',
     openTrades: profit > 50 ? 1 : 0,
     maxTrades: 1,
     candleCountdown: '04:23',
@@ -603,6 +633,7 @@ function render() {
     <div class="card">
       <div class="card-header">
         <div class="card-title">📊 ตลาด</div>
+        ${d.atrPips ? `<span class="atr-badge">ATR ${Number(d.atrPips).toFixed(1)} pip</span>` : ''}
       </div>
       <div class="market-grid">
         <div class="market-item">
@@ -626,6 +657,52 @@ function render() {
         </div>
       </div>
     </div>
+
+    <!-- Level 1: ATR + Multi-TF S/R -->
+    ${(d.atrPips || d.h4Support || d.d1Support) ? `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🧠 Level 1 · ATR &amp; Multi-TF S/R</div>
+        ${(() => {
+          const bias = d.mtfBias || 'NEUTRAL';
+          if (bias === 'BULLISH') return `<span class="bias-chip bias-bull">🐂 Bullish</span>`;
+          if (bias === 'BEARISH') return `<span class="bias-chip bias-bear">🐻 Bearish</span>`;
+          return `<span class="bias-chip bias-neu">➖ Neutral</span>`;
+        })()}
+      </div>
+
+      ${d.atrPips ? `
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div class="market-item" style="flex:1;padding:10px;">
+          <div class="market-lbl">ATR (${d.rsiPeriod || 14})</div>
+          <div class="market-val" style="color:#a99bff">${Number(d.atrPips).toFixed(1)} pip</div>
+        </div>
+        <div class="market-item" style="flex:1;padding:10px;">
+          <div class="market-lbl">SL จาก ATR</div>
+          <div class="market-val" style="color:var(--loss)">${Number(d.atrSLPips||0).toFixed(1)} pip</div>
+        </div>
+      </div>` : ''}
+
+      ${(d.h4Support || d.d1Support) ? `
+      <div style="font-size:11px;color:var(--text2);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;">Multi-Timeframe S/R Levels</div>
+      <div class="mtf-grid">
+        <div style="font-size:10px;color:var(--text2);text-align:center;padding-top:4px;">TF</div>
+        <div style="font-size:10px;color:var(--profit);text-align:center;padding-top:4px;">Support</div>
+        <div style="font-size:10px;color:var(--loss);text-align:center;padding-top:4px;">Resistance</div>
+
+        ${d.h4Support ? `
+        <div class="mtf-item"><div class="mtf-lbl">H4</div></div>
+        <div class="mtf-item"><div class="mtf-val" style="color:var(--profit)">${Number(d.h4Support).toFixed(5)}</div></div>
+        <div class="mtf-item"><div class="mtf-val" style="color:var(--loss)">${Number(d.h4Resistance||0).toFixed(5)}</div></div>
+        ` : ''}
+
+        ${d.d1Support ? `
+        <div class="mtf-item"><div class="mtf-lbl">D1</div></div>
+        <div class="mtf-item"><div class="mtf-val" style="color:var(--profit)">${Number(d.d1Support).toFixed(5)}</div></div>
+        <div class="mtf-item"><div class="mtf-val" style="color:var(--loss)">${Number(d.d1Resistance||0).toFixed(5)}</div></div>
+        ` : ''}
+      </div>` : ''}
+    </div>` : ''}
 
     <!-- Account -->
     <div class="card">
